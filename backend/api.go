@@ -1108,18 +1108,18 @@ func parseResponseField1(data []byte, limit int) ([]MediaItem, string, string) {
 			fieldData := data[newOffset : newOffset+int(length)]
 			offset = newOffset + int(length)
 
-			// Field 1 often contains media items
-			if fieldNum == 1 {
+			// Field 2 contains media items array (repeated field)
+			if fieldNum == 2 {
 				item := tryParseMediaItem(fieldData)
 				if item != nil && item.MediaKey != "" && shouldAddItem(len(items), limit) {
 					items = append(items, *item)
 				}
 			}
-			// Field 2 is often the next page token
-			if fieldNum == 2 {
+			// Field 6 is the next page token
+			if fieldNum == 6 {
 				nextPageToken = string(fieldData)
 			}
-			// Field 5 is often the state token
+			// Field 5 is the state token
 			if fieldNum == 5 {
 				stateToken = string(fieldData)
 			}
