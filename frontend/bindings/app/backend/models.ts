@@ -16,6 +16,7 @@ export class Config {
     "uploadThreads": number;
     "deleteFromHost": boolean;
     "disableUnsupportedFilesFilter": boolean;
+    "thumbnailSize": string;
 
     /** Creates a new Config instance. */
     constructor($$source: Partial<Config> = {}) {
@@ -48,6 +49,9 @@ export class Config {
         }
         if (!("disableUnsupportedFilesFilter" in $$source)) {
             this["disableUnsupportedFilesFilter"] = false;
+        }
+        if (!("thumbnailSize" in $$source)) {
+            this["thumbnailSize"] = "medium";
         }
 
         Object.assign(this, $$source);

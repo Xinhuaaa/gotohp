@@ -8,6 +8,7 @@ import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Cr
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as $models from "./models.js";
+import { hashCode } from "./utils.js";
 
 export function AddCredentials(newAuthString: string): $CancellablePromise<void> {
     return $Call.ByID(4083250689, newAuthString);
@@ -57,6 +58,10 @@ export function SetUploadThreads(uploadThreads: number): $CancellablePromise<voi
 
 export function SetUseQuota(useQuota: boolean): $CancellablePromise<void> {
     return $Call.ByID(778544527, useQuota);
+}
+
+export function SetThumbnailSize(thumbnailSize: string): $CancellablePromise<void> {
+    return $Call.ByID(hashCode("ConfigManager.SetThumbnailSize"), thumbnailSize);
 }
 
 // Private type creation functions

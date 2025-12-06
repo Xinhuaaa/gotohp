@@ -13,6 +13,7 @@ import EditableSelect from "./components/ui/EditableSelect.vue"
 import './index.css'
 import SettingsPanel from "./SettingsPanel.vue"
 import Upload from './Upload.vue'
+import Gallery from './Gallery.vue'
 import { uploadManager } from './utils/UploadManager'
 
 import { toast, Toaster } from "vue-sonner"
@@ -21,6 +22,7 @@ useColorMode().value = "dark"
 
 const { state: uploadState } = uploadManager
 const copyButtonText = ref('Copy as JSON');
+const activeView = ref('upload')
 
 const selectedOption = ref('')
 const options = ref<string[]>([])
@@ -120,40 +122,71 @@ const handleCopyClick = () => {
 
 <template>
   <main class="w-screen h-screen flex flex-col items-center" style="--wails-draggable: drag">
-    <div v-if="!uploadState.isUploading" class="w-screen h-screen flex flex-col items-center gap-4 max-w-md pt-30"
-      data-wails-dropzone>
+    <div v-if="!uploadState.isUploading" class="w-full h-full flex flex-col">
       <template v-if="options.length === 0">
-        <EditableSelect v-model="selectedOption" :options="options"
-          @update:options="(newOptions) => options = newOptions" @item-added="addCredentials"
-          @item-removed="removeCredentials" />
+        <div class="w-full h-full flex flex-col items-center gap-4 max-w-md pt-30">
+          <EditableSelect v-model="selectedOption" :options="options"
+            @update:options="(newOptions) => options = newOptions" @item-added="addCredentials"
+            @item-removed="removeCredentials" />
+        </div>
       </template>
 
       <template v-else>
-        <h1 class="text-xl font-semibold select-none">
-          Drop files to upload
-        </h1>
-        <EditableSelect v-model="selectedOption" :options="options"
-          @update:options="(newOptions) => options = newOptions" @item-added="addCredentials"
-          @item-removed="removeCredentials" />
-
-        <Sheet>
-          <SheetTrigger>
-            <Button variant="outline" class="cursor-pointer select-none">
-              Settings
+        <!-- Navigation header -->
+        <div class="flex items-center justify-between p-4 border-b">
+          <div class="flex gap-2">
+            <Button 
+              :variant="activeView === 'upload' ? 'default' : 'outline'" 
+              @click="activeView = 'upload'"
+              class="cursor-pointer select-none"
+            >
+              Upload
             </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom">
-            <SettingsPanel />
-          </SheetContent>
-        </Sheet>
+            <Button 
+              :variant="activeView === 'gallery' ? 'default' : 'outline'" 
+              @click="activeView = 'gallery'"
+              class="cursor-pointer select-none"
+            >
+              Gallery
+            </Button>
+          </div>
 
-        <div v-if="uploadState.uploadedFiles > 0" class="flex flex-col items-center gap-2 border rounded-lg p-5 mt-5">
-          <h2 class="text-l font-semibold select-none ">Upload Results</h2>
-          <Label class="text-muted-foreground">Successful: {{ uploadState.results.success.length }}</Label>
-          <Label class="text-muted-foreground">Failed: {{ uploadState.results.fail.length }}</Label>
-          <Button variant="outline" class="cursor-pointer select-none min-w-[125px]" @click="handleCopyClick">
-            {{ copyButtonText }}
-          </Button>
+          <div class="flex items-center gap-2">
+            <EditableSelect v-model="selectedOption" :options="options"
+              @update:options="(newOptions) => options = newOptions" @item-added="addCredentials"
+              @item-removed="removeCredentials" />
+            
+            <Sheet>
+              <SheetTrigger>
+                <Button variant="outline" class="cursor-pointer select-none">
+                  Settings
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom">
+                <SettingsPanel />
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
+
+        <!-- Content area -->
+        <div class="flex-1 overflow-auto" :data-wails-dropzone="activeView === 'upload' ? '' : undefined">
+          <div v-if="activeView === 'upload'" class="w-full h-full flex flex-col items-center gap-4 max-w-md mx-auto pt-20">
+            <h1 class="text-xl font-semibold select-none">
+              Drop files to upload
+            </h1>
+
+            <div v-if="uploadState.uploadedFiles > 0" class="flex flex-col items-center gap-2 border rounded-lg p-5 mt-5">
+              <h2 class="text-l font-semibold select-none">Upload Results</h2>
+              <Label class="text-muted-foreground">Successful: {{ uploadState.results.success.length }}</Label>
+              <Label class="text-muted-foreground">Failed: {{ uploadState.results.fail.length }}</Label>
+              <Button variant="outline" class="cursor-pointer select-none min-w-[125px]" @click="handleCopyClick">
+                {{ copyButtonText }}
+              </Button>
+            </div>
+          </div>
+
+          <Gallery v-if="activeView === 'gallery'" />
         </div>
       </template>
     </div>

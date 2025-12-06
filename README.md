@@ -4,15 +4,31 @@
 
 Unofficial Google Photos Desktop GUI Client
 
+## Features
+
+### GUI Features
+- **Upload**: Drag-and-drop file upload interface with real-time progress tracking
+- **Gallery**: Browse your Google Photos library with thumbnail previews
+- **Download**: Download photos directly to your computer
+- **Settings**: Configurable upload and display settings
+
+### Upload Features
 - Unlimited uploads (can be disabled)
-- Drag-and-drop file upload interface
-- Credential management
-- Real-time upload progress tracking
-- Configurable upload threads
 - Individual files or directories uploads, with optional recursive scanning
 - Skips files already present in your account
-- CLI mode
-- Configurable, presistent upload settings (stored in "%system config path%/gotohp/gotohp.config")  
+- Configurable upload threads
+- Real-time upload progress tracking
+
+### Gallery Features
+- Browse all photos from your Google Photos account
+- Adjustable thumbnail sizes (small, medium, large)
+- One-click photo download
+- Pagination support
+
+### General Features
+- Credential management for multiple accounts
+- CLI mode for advanced users
+- Configurable, presistent settings (stored in "%system config path%/gotohp/gotohp.config")  
     You can force local config by creating empty gotohp.config next to executable.
 
 ## [Download](https://github.com/xob0t/gotohp/releases/latest)
