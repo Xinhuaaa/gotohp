@@ -502,13 +502,13 @@ func handleGetURLsCommand(args []string) {
 
 func handleThumbnailCommand(args []string) {
 	// Check for help flag
-	if len(args) > 0 && (args[0] == "--help" || args[0] == "-h") {
+	if len(args) > 0 && (args[0] == "--help") {
 		fmt.Println("Usage: gotohp thumbnail <media-key> [flags]")
 		fmt.Println("\nDownload a thumbnail for a media item from Google Photos.")
 		fmt.Println("\nFlags:")
 		fmt.Println("  -o, --output <path>    Output file path (default: <media-key>.jpg)")
 		fmt.Println("  -w, --width <pixels>   Thumbnail width")
-		fmt.Println("  -h, --height <pixels>  Thumbnail height")
+		fmt.Println("  --height <pixels>      Thumbnail height")
 		fmt.Println("  --no-overlay           Remove overlay (e.g., play button for videos)")
 		fmt.Println("  -c, --config <path>    Path to config file")
 		return
@@ -538,12 +538,20 @@ func handleThumbnailCommand(args []string) {
 			}
 		case "--width", "-w":
 			if i+1 < len(args) {
-				fmt.Sscanf(args[i+1], "%d", &width)
+				_, err := fmt.Sscanf(args[i+1], "%d", &width)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error: invalid width value '%s'\n", args[i+1])
+					os.Exit(1)
+				}
 				i++
 			}
 		case "--height":
 			if i+1 < len(args) {
-				fmt.Sscanf(args[i+1], "%d", &height)
+				_, err := fmt.Sscanf(args[i+1], "%d", &height)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error: invalid height value '%s'\n", args[i+1])
+					os.Exit(1)
+				}
 				i++
 			}
 		case "--no-overlay":
