@@ -3,7 +3,6 @@ package backend
 import (
 	"encoding/base64"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 )
