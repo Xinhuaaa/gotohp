@@ -31,7 +31,7 @@ async function loadMediaList() {
   loading.value = true
   try {
     const result = await MediaBrowser.GetMediaList(pageToken.value, 50)
-    if (result) {
+    if (result && result.items) {
       mediaItems.value = [...mediaItems.value, ...result.items]
       pageToken.value = result.nextPageToken || ''
       hasMore.value = !!result.nextPageToken
