@@ -59,5 +59,20 @@ export function SetUseQuota(useQuota: boolean): $CancellablePromise<void> {
     return $Call.ByID(778544527, useQuota);
 }
 
+export function SetThumbnailSize(thumbnailSize: string): $CancellablePromise<void> {
+    return $Call.ByID(hashCode("ConfigManager.SetThumbnailSize"), thumbnailSize);
+}
+
+// Generate a simple hash for method name (for new methods)
+function hashCode(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+}
+
 // Private type creation functions
 const $$createType0 = $models.Config.createFrom;

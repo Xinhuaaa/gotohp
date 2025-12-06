@@ -4,6 +4,13 @@ import { ConfigManager } from '../bindings/app/backend'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 
 import {
     NumberField,
@@ -22,6 +29,7 @@ interface Settings {
     deleteFromHost: boolean
     disableUnsupportedFilesFilter: boolean
     uploadThreads: number
+    thumbnailSize: string
 }
 
 const settings = ref<Settings>({
@@ -32,7 +40,8 @@ const settings = ref<Settings>({
     forceUpload: false,
     deleteFromHost: false,
     disableUnsupportedFilesFilter: false,
-    uploadThreads: 0
+    uploadThreads: 0,
+    thumbnailSize: 'medium'
 })
 
 onMounted(async () => {
@@ -45,7 +54,8 @@ onMounted(async () => {
         forceUpload: config.forceUpload || false,
         deleteFromHost: config.deleteFromHost || false,
         disableUnsupportedFilesFilter: config.disableUnsupportedFilesFilter || false,
-        uploadThreads: config.uploadThreads || 1
+        uploadThreads: config.uploadThreads || 1,
+        thumbnailSize: config.thumbnailSize || 'medium'
     }
 })
 
@@ -86,6 +96,10 @@ watch(() => settings.value.uploadThreads, async (newValue) => {
         await ConfigManager.SetUploadThreads(newValue)
     }
 })
+
+watch(() => settings.value.thumbnailSize, async (newValue) => {
+    await ConfigManager.SetThumbnailSize(newValue)
+})
 </script>
 
 <template>
@@ -98,6 +112,19 @@ watch(() => settings.value.uploadThreads, async (newValue) => {
                 <NumberFieldIncrement class="cursor-pointer" />
             </NumberFieldContent>
         </NumberField>
+        <div class="flex items-center justify-between">
+            <Label for="thumbnail-size" class="size-full">Thumbnail Size</Label>
+            <Select v-model="settings.thumbnailSize">
+                <SelectTrigger class="w-[120px]">
+                    <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="small">Small</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="large">Large</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
         <div class="flex items-center justify-between">
             <Label for="use-quota" class="size-full cursor-pointer">Use Quota</Label>
             <Switch id="use-quota" v-model="settings.useQuota" />

@@ -35,6 +35,7 @@ func runGUI() {
 		Description: "Google Photos unofficial client",
 		Services: []application.Service{
 			application.NewService(&backend.ConfigManager{}),
+			application.NewService(&backend.MediaBrowser{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -47,12 +48,12 @@ func runGUI() {
 	window := wailsApp.Window.NewWithOptions(application.WebviewWindowOptions{
 		Title:             title,
 		Frameless:         false,
-		Width:             400,
+		Width:             800,
 		Height:            600,
-		MaxWidth:          400,
-		MaxHeight:         600,
+		MaxWidth:          0,
+		MaxHeight:         0,
 		EnableDragAndDrop: true,
-		DisableResize:     true,
+		DisableResize:     false,
 		BackgroundType:    application.BackgroundTypeTranslucent,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 0,

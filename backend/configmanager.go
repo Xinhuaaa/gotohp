@@ -24,6 +24,7 @@ type Config struct {
 	UploadThreads                 int      `json:"uploadThreads" koanf:"upload_threads"`
 	DeleteFromHost                bool     `json:"deleteFromHost" koanf:"delete_from_host"`
 	DisableUnsupportedFilesFilter bool     `json:"disableUnsupportedFilesFilter" koanf:"disable_unsupported_files_filter"`
+	ThumbnailSize                 string   `json:"thumbnailSize" koanf:"thumbnail_size"`
 }
 
 type ConfigManager struct{}
@@ -33,6 +34,7 @@ var UploadRunning bool = false
 var ConfigPath string
 var DefaultConfig = Config{
 	UploadThreads: 3,
+	ThumbnailSize: "medium",
 }
 
 // ParseAuthString parses an auth string and returns url.Values (exported for CLI use)
@@ -86,6 +88,20 @@ func (g *ConfigManager) SetUploadThreads(uploadThreads int) {
 		return
 	}
 	AppConfig.UploadThreads = uploadThreads
+	saveAppConfig()
+}
+
+func (g *ConfigManager) SetThumbnailSize(thumbnailSize string) {
+	// Validate thumbnail size
+	validSizes := map[string]bool{
+		"small":  true,
+		"medium": true,
+		"large":  true,
+	}
+	if !validSizes[thumbnailSize] {
+		return
+	}
+	AppConfig.ThumbnailSize = thumbnailSize
 	saveAppConfig()
 }
 
