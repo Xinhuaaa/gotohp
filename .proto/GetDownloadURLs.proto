@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+// Empty message type for placeholder fields
+message Empty {
+}
+
+// Request message for GetDownloadURLs API
+message GetDownloadURLs {
+  message field1_type {
+    message field1_type {
+      string mediaKey = 1;
+    }
+    field1_type field1 = 1;
+  }
+
+  message field2_type {
+    message field1_type {
+      message field7_type {
+        Empty field2 = 2;
+      }
+      field7_type field7 = 7;
+    }
+
+    message field5_type {
+      Empty field2 = 2;
+      Empty field3 = 3;
+
+      message field5_type {
+        Empty field1 = 1;
+        int64 field3 = 3;
+      }
+      field5_type field5 = 5;
+    }
+
+    field1_type field1 = 1;
+    field5_type field5 = 5;
+  }
+
+  field1_type field1 = 1;
+  field2_type field2 = 2;
+}
+
+// Response message for GetDownloadURLs API
+message GetDownloadURLsResponse {
+  message field1_type {
+    message field5_type {
+      message field2_type {
+        string editedUrl = 5;
+        string originalUrl = 6;
+      }
+      field2_type field2 = 2;
+    }
+    field5_type field5 = 5;
+  }
+  field1_type field1 = 1;
+}
