@@ -93,6 +93,9 @@ func (g *ConfigManager) SetUploadThreads(uploadThreads int) {
 
 func (g *ConfigManager) SetThumbnailSize(thumbnailSize string) {
 	// Validate thumbnail size
+	// Note: These values must match the frontend implementation in:
+	// - frontend/src/components/MediaItem.vue (size mapping)
+	// - frontend/src/SettingsPanel.vue (select options)
 	validSizes := map[string]bool{
 		"small":  true,
 		"medium": true,

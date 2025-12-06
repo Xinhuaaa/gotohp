@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { MediaBrowser, ConfigManager } from '../bindings/app/backend'
 import type { MediaItem } from '../bindings/app/backend/mediabrowser'
 import Button from "./components/ui/button/Button.vue"
+import MediaItemComponent from './components/MediaItem.vue'
 import { toast } from "vue-sonner"
 
 const mediaItems = ref<MediaItem[]>([])
@@ -114,13 +115,3 @@ const gridCols = computed(() => {
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import MediaItemComponent from './components/MediaItem.vue'
-
-export default {
-  components: {
-    MediaItemComponent
-  }
-}
-</script>

@@ -28,6 +28,7 @@ async function loadThumbnail() {
   error.value = false
   try {
     const base64Data = await MediaBrowser.GetThumbnail(props.item.mediaKey, props.thumbnailSize)
+    // Backend returns thumbnails as JPEG format from Google Photos API
     thumbnailData.value = `data:image/jpeg;base64,${base64Data}`
   } catch (err) {
     console.error('Failed to load thumbnail:', err)
@@ -70,9 +71,10 @@ function handleDownload() {
         @click="handleDownload"
         :disabled="isDownloading"
         class="cursor-pointer"
+        :title="isDownloading ? 'Downloading...' : 'Download'"
       >
         <Download v-if="!isDownloading" class="h-4 w-4" />
-        <span v-else class="text-xs">...</span>
+        <span v-else class="text-xs animate-pulse">↓</span>
       </Button>
     </div>
 

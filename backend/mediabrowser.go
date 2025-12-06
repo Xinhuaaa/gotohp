@@ -12,6 +12,9 @@ type MediaBrowser struct{}
 
 // GetMediaList retrieves a paginated list of media items
 func (m *MediaBrowser) GetMediaList(pageToken string, limit int) (*MediaListResult, error) {
+	// Create a new API client for each request. While this has some overhead,
+	// it ensures we always have fresh authentication and simplifies error handling.
+	// The API client internally caches auth tokens to minimize redundant auth requests.
 	api, err := NewApi()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create API client: %w", err)
