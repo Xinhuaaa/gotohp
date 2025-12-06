@@ -65,13 +65,7 @@ func (m *MediaBrowser) DownloadMedia(mediaKey string) (string, error) {
 		return "", fmt.Errorf("failed to create API client: %w", err)
 	}
 
-	// Get media info to determine filename
-	mediaInfo, err := api.GetMediaInfo(mediaKey)
-	if err != nil {
-		return "", fmt.Errorf("failed to get media info: %w", err)
-	}
-
-	// Get download URLs
+	// Get download URLs (this also returns filename for videos)
 	downloadURLs, err := api.GetDownloadURLs(mediaKey)
 	if err != nil {
 		return "", fmt.Errorf("failed to get download URLs: %w", err)
@@ -81,6 +75,10 @@ func (m *MediaBrowser) DownloadMedia(mediaKey string) (string, error) {
 	downloadURL := downloadURLs.EditedURL
 	if downloadURLs.OriginalURL != "" {
 		downloadURL = downloadURLs.OriginalURL
+	}
+
+	if downloadURL == "" {
+		return "", fmt.Errorf("no download URL available for media key: %s", mediaKey)
 	}
 
 	// Get user's Downloads folder
@@ -95,10 +93,17 @@ func (m *MediaBrowser) DownloadMedia(mediaKey string) (string, error) {
 		return "", fmt.Errorf("failed to create downloads directory: %w", err)
 	}
 
-	// Determine output path
-	filename := mediaInfo.Filename
+	// Determine filename - prefer filename from download response
+	filename := downloadURLs.Filename
 	if filename == "" {
-		filename = fmt.Sprintf("%s.jpg", mediaKey[:10])
+		// Fallback: try to get filename from media info
+		mediaInfo, err := api.GetMediaInfo(mediaKey)
+		if err == nil && mediaInfo.Filename != "" {
+			filename = mediaInfo.Filename
+		} else {
+			// Last resort: generate a filename based on media key
+			filename = fmt.Sprintf("%s.jpg", mediaKey[:10])
+		}
 	}
 	outputPath := filepath.Join(downloadsDir, filename)
 
