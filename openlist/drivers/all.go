@@ -1,6 +1,7 @@
 package drivers
 
 import (
+	_ "app/openlist/drivers/gotohp"
 	_ "github.com/OpenListTeam/OpenList/v4/drivers/115"
 	_ "github.com/OpenListTeam/OpenList/v4/drivers/115_open"
 	_ "github.com/OpenListTeam/OpenList/v4/drivers/115_share"
