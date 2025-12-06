@@ -363,13 +363,11 @@ type ThumbnailSize struct {
 	Height int
 }
 
-// Predefined thumbnail sizes
+// Predefined thumbnail sizes (based on actual server request patterns)
 var thumbnailSizes = map[string]ThumbnailSize{
-	"small":   {Width: 128, Height: 128},
-	"medium":  {Width: 256, Height: 256},
-	"large":   {Width: 512, Height: 512},
-	"xlarge":  {Width: 1024, Height: 1024},
-	"xxlarge": {Width: 2048, Height: 2048},
+	"small":  {Width: 50, Height: 50},
+	"medium": {Width: 800, Height: 800},
+	"large":  {Width: 1600, Height: 1600},
 }
 
 // CLI thumbnail implementation
@@ -390,7 +388,7 @@ func runCLIThumbnail(mediaKey, outputPath string, width, height int, size string
 	if size != "" {
 		preset, ok := thumbnailSizes[strings.ToLower(size)]
 		if !ok {
-			return fmt.Errorf("invalid size preset '%s'. Use: small, medium, large, xlarge, xxlarge", size)
+			return fmt.Errorf("invalid size preset '%s'. Use: small, medium, large", size)
 		}
 		width = preset.Width
 		height = preset.Height
@@ -401,7 +399,7 @@ func runCLIThumbnail(mediaKey, outputPath string, width, height int, size string
 	if width == 0 && height == 0 {
 		width = thumbnailSizes["medium"].Width
 		height = thumbnailSizes["medium"].Height
-		fmt.Println("Using default medium size: 256x256")
+		fmt.Println("Using default medium size: 800x800")
 	}
 
 	// Get the thumbnail

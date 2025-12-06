@@ -43,7 +43,7 @@ gotohp-cli.exe version
   - `-l, --log-level <level>` - Set log level: debug, info, warn, error (default: info)
   - `-c, --config <path>` - Path to config file
 - `thumbnail <media-key>` (alias: `thumb`) - Download a thumbnail at various sizes
-  - `-s, --size <preset>` - Size preset: small (128px), medium (256px), large (512px), xlarge (1024px), xxlarge (2048px)
+  - `-s, --size <preset>` - Size preset: small (50px), medium (800px), large (1600px)
   - `-w, --width <pixels>` - Custom thumbnail width
   - `-h, --height <pixels>` - Custom thumbnail height
   - `-o, --output <path>` - Output file path
