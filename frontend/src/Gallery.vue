@@ -63,11 +63,6 @@ async function downloadMedia(mediaKey: string, filename: string) {
   }
 }
 
-function getThumbnailUrl(item: MediaItem): string {
-  // Return a placeholder while we load the actual thumbnail
-  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%23444' width='400' height='400'/%3E%3C/svg%3E`
-}
-
 const gridCols = computed(() => {
   switch (thumbnailSize.value) {
     case 'small': return 'grid-cols-6'
