@@ -9,8 +9,10 @@ const mediaItems = ref<MediaItem[]>([])
 const loading = ref(false)
 const pageToken = ref('')
 const hasMore = ref(true)
+const reachedEnd = ref(false)
 const thumbnailSize = ref('medium')
 const downloadingItems = ref<Set<string>>(new Set())
+const seenMediaKeys = ref<Set<string>>(new Set())
 
 // Load thumbnail size from config
 onMounted(async () => {
@@ -26,15 +28,63 @@ onMounted(async () => {
 })
 
 async function loadMediaList() {
-  if (loading.value || !hasMore.value) return
+  if (loading.value || reachedEnd.value) return
   
   loading.value = true
   try {
+    console.log('Loading media list with pageToken:', pageToken.value)
     const result = await MediaBrowser.GetMediaList(pageToken.value, 50)
+    console.log('Received result:', result)
+    
     if (result && result.items) {
-      mediaItems.value = [...mediaItems.value, ...result.items]
-      pageToken.value = result.nextPageToken || ''
-      hasMore.value = !!result.nextPageToken
+      // Filter out duplicate items based on mediaKey
+      const newItems = result.items.filter(item => {
+        if (seenMediaKeys.value.has(item.mediaKey)) {
+          console.log('Skipping duplicate item:', item.mediaKey)
+          return false
+        }
+        seenMediaKeys.value.add(item.mediaKey)
+        return true
+      })
+      
+      console.log(`Adding ${newItems.length} new items (${result.items.length} total in response)`)
+      
+      // If all items were duplicates or no new items, we've reached the end
+      if (newItems.length === 0 && result.items.length > 0) {
+        console.log('All items were duplicates - reached end')
+        reachedEnd.value = true
+        hasMore.value = false
+        toast.info('已到底部', {
+          description: '没有更多照片了',
+        })
+      } else {
+        mediaItems.value = [...mediaItems.value, ...newItems]
+        pageToken.value = result.nextPageToken || ''
+        
+        // Check if we've reached the end
+        if (!result.nextPageToken) {
+          console.log('No nextPageToken - reached end')
+          reachedEnd.value = true
+          hasMore.value = false
+          if (newItems.length === 0) {
+            toast.info('已到底部', {
+              description: '没有更多照片了',
+            })
+          }
+        } else {
+          hasMore.value = true
+        }
+      }
+    } else if (!result || !result.items || result.items.length === 0) {
+      // No items in response
+      console.log('No items in response - reached end')
+      reachedEnd.value = true
+      hasMore.value = false
+      if (mediaItems.value.length > 0) {
+        toast.info('已到底部', {
+          description: '没有更多照片了',
+        })
+      }
     }
   } catch (error: any) {
     console.error('Failed to load media list:', error)
@@ -80,14 +130,17 @@ const gridCols = computed(() => {
       <h2 class="text-xl font-semibold">Photo Gallery</h2>
       <div class="flex gap-2">
         <Button 
-          v-if="hasMore" 
+          v-if="hasMore || loading" 
           variant="outline" 
           @click="loadMediaList"
-          :disabled="loading"
+          :disabled="loading || reachedEnd"
           class="cursor-pointer"
         >
-          {{ loading ? 'Loading...' : 'Load More' }}
+          {{ loading ? 'Loading...' : (reachedEnd ? '已到底部' : 'Load More') }}
         </Button>
+        <div v-if="reachedEnd && mediaItems.length > 0" class="text-sm text-muted-foreground flex items-center">
+          没有更多照片了
+        </div>
       </div>
     </div>
 
