@@ -13,6 +13,26 @@ const reachedEnd = ref(false)
 const thumbnailSize = ref('medium')
 const downloadingItems = ref<Set<string>>(new Set())
 const seenMediaKeys = ref<Set<string>>(new Set())
+const DEBUG = false // Set to true to enable debug logging
+
+function debugLog(...args: any[]) {
+  if (DEBUG) {
+    console.log(...args)
+  }
+}
+
+function showEndOfListMessage() {
+  if (mediaItems.value.length > 0) {
+    toast.info('已到底部', {
+      description: '没有更多照片了',
+    })
+  }
+}
+
+function markAsEndOfList() {
+  reachedEnd.value = true
+  hasMore.value = false
+}
 
 // Load thumbnail size from config
 onMounted(async () => {
@@ -32,59 +52,47 @@ async function loadMediaList() {
   
   loading.value = true
   try {
-    console.log('Loading media list with pageToken:', pageToken.value)
+    debugLog('Loading media list with pageToken:', pageToken.value)
     const result = await MediaBrowser.GetMediaList(pageToken.value, 50)
-    console.log('Received result:', result)
+    debugLog('Received result:', result)
     
     if (result && result.items) {
       // Filter out duplicate items based on mediaKey
       const newItems = result.items.filter(item => {
         if (seenMediaKeys.value.has(item.mediaKey)) {
-          console.log('Skipping duplicate item:', item.mediaKey)
+          debugLog('Skipping duplicate item:', item.mediaKey)
           return false
         }
         seenMediaKeys.value.add(item.mediaKey)
         return true
       })
       
-      console.log(`Adding ${newItems.length} new items (${result.items.length} total in response)`)
+      debugLog(`Adding ${newItems.length} new items (${result.items.length} total in response)`)
       
-      // If all items were duplicates or no new items, we've reached the end
-      if (newItems.length === 0 && result.items.length > 0) {
-        console.log('All items were duplicates - reached end')
-        reachedEnd.value = true
-        hasMore.value = false
-        toast.info('已到底部', {
-          description: '没有更多照片了',
-        })
-      } else {
+      // Add new items to the list
+      if (newItems.length > 0) {
         mediaItems.value = [...mediaItems.value, ...newItems]
-        pageToken.value = result.nextPageToken || ''
-        
-        // Check if we've reached the end
-        if (!result.nextPageToken) {
-          console.log('No nextPageToken - reached end')
-          reachedEnd.value = true
-          hasMore.value = false
-          if (newItems.length === 0) {
-            toast.info('已到底部', {
-              description: '没有更多照片了',
-            })
-          }
-        } else {
-          hasMore.value = true
+      }
+      
+      // Check if we've reached the end
+      const hasNextPage = !!result.nextPageToken
+      const allDuplicates = newItems.length === 0 && result.items.length > 0
+      
+      if (allDuplicates || !hasNextPage) {
+        debugLog('Reached end of list:', allDuplicates ? 'all duplicates' : 'no next page token')
+        markAsEndOfList()
+        if (allDuplicates || newItems.length === 0) {
+          showEndOfListMessage()
         }
+      } else {
+        pageToken.value = result.nextPageToken || ''
+        hasMore.value = true
       }
-    } else if (!result || !result.items || result.items.length === 0) {
+    } else {
       // No items in response
-      console.log('No items in response - reached end')
-      reachedEnd.value = true
-      hasMore.value = false
-      if (mediaItems.value.length > 0) {
-        toast.info('已到底部', {
-          description: '没有更多照片了',
-        })
-      }
+      debugLog('No items in response - reached end')
+      markAsEndOfList()
+      showEndOfListMessage()
     }
   } catch (error: any) {
     console.error('Failed to load media list:', error)
